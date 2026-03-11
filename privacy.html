@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>プライバシーポリシー — Choreia</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#1a1a1a;line-height:1.8;max-width:720px;margin:0 auto;padding:24px 16px}
+h1{font-size:1.5rem;margin-bottom:8px}
+h2{font-size:1.1rem;margin-top:28px;margin-bottom:8px}
+p,ul{margin-bottom:12px}
+ul{padding-left:1.5em}
+.meta{color:#666;font-size:0.9rem;margin-bottom:24px}
+a{color:#1a73e8}
+</style>
+</head>
+<body>
+<h1>プライバシーポリシー</h1>
+<p class="meta">最終更新日: 2026年3月12日</p>
+
+<p>Choreia（以下「当プロジェクト」）が提供するWebアプリケーション（Expense、Books、Forms 等、以下「本サービス」）は、ユーザーのプライバシーを尊重し、個人情報の保護に努めます。</p>
+
+<h2>1. 収集する情報</h2>
+<p>本サービスは独自のサーバーを持たず、ユーザーのデータを収集・保存しません。</p>
+<ul>
+  <li>Googleアカウント情報（名前・メールアドレス）は、ログイン時にGoogle Identity Servicesを通じて取得し、ブラウザ上での表示にのみ使用します。</li>
+  <li>OAuthアクセストークンはブラウザのメモリ上にのみ保持され、外部に送信されません。</li>
+</ul>
+
+<h2>2. データの保存先</h2>
+<p>本サービスで作成されるデータはすべてユーザー自身のGoogleアカウントに保存されます。</p>
+<ul>
+  <li><strong>経費データ・会計データ</strong> → ユーザーのGoogle Sheets</li>
+  <li><strong>レシート画像・証憑</strong> → ユーザーのGoogle Drive</li>
+  <li><strong>フォーム回答</strong> → ユーザーのGoogle Sheets</li>
+</ul>
+<p>当プロジェクトの開発者がこれらのデータにアクセスすることはありません。</p>
+
+<h2>3. Google APIの利用</h2>
+<p>本サービスは以下のGoogle APIを利用します。</p>
+<ul>
+  <li>Google Sheets API — データの読み書き</li>
+  <li>Google Drive API — ファイルの保存</li>
+  <li>Gemini API — レシート画像のAI読み取り</li>
+</ul>
+<p>これらのAPIはユーザーが明示的に許可したOAuthスコープの範囲内でのみ動作します。本サービスのGoogle APIの利用は、<a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>（Limited Use requirements を含む）に準拠しています。</p>
+
+<h2>4. Cookieとローカルストレージ</h2>
+<p>本サービスは設定データやテンプレートの保存にブラウザのlocalStorageを使用する場合があります。これはユーザーの端末にのみ保存され、外部に送信されません。</p>
+
+<h2>5. 第三者への提供</h2>
+<p>本サービスはユーザーの情報を第三者に提供、販売、共有することはありません。</p>
+
+<h2>6. セキュリティ</h2>
+<p>すべての通信はHTTPSで暗号化されます。OAuthトークンはブラウザセッション中のみメモリに保持され、ストレージに永続化されません。</p>
+
+<h2>7. お問い合わせ</h2>
+<p>プライバシーに関するお問い合わせは、<a href="https://github.com/Choreia">GitHubの各リポジトリのIssue</a>からご連絡ください。</p>
+
+<h2>8. 変更</h2>
+<p>本ポリシーは予告なく変更される場合があります。変更後の内容は本ページに掲載した時点で有効となります。</p>
+
+<p style="margin-top:32px"><a href="./">← Choreia トップに戻る</a></p>
+</body>
+</html>
