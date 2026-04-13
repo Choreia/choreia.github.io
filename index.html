@@ -73,6 +73,10 @@ footer a:hover{text-decoration:underline}
     <h1>Choreia</h1>
   </div>
   <p>無料・オープンソースのビジネスツール</p>
+  <button id="lp-login-btn" onclick="handleSignIn()" style="margin-top:16px;display:inline-flex;align-items:center;gap:8px;padding:10px 24px;background:#fff;color:#3c4043;border:none;border-radius:24px;cursor:pointer;font-size:14px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,.15)">
+    <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59A14.5 14.5 0 019.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.9 23.9 0 000 24c0 3.77.9 7.34 2.56 10.56l7.97-5.97z"/><path fill="#EA4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.97C6.51 42.62 14.62 48 24 48z"/></svg>
+    Googleでログイン
+  </button>
 </header>
 <div class="about">
   <p><strong>Choreia</strong>は、個人事業主や中小企業向けの無料・オープンソースのビジネスツール群です。経費管理、会計、フォーム作成など、日常業務に必要な機能をブラウザだけで提供します。サーバーにデータを送信せず、すべてのデータはユーザー自身のGoogleアカウントに安全に保存されます。</p>
@@ -166,38 +170,63 @@ footer a:hover{text-decoration:underline}
   <div class="home-signout"><button onclick="handleSignOut()">ログアウト</button></div>
 </div>
 
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
+var CLIENT_ID='595564106580-hsrunbvfacmr23d2jopl462taqilip75.apps.googleusercontent.com';
+var SCOPES='https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/calendar';
+var tokenClient=null;
+
+function showHome(name){
+  document.getElementById('lp-view').style.display='none';
+  document.getElementById('home-view').style.display='';
+  document.getElementById('home-user').textContent=name;
+  var h=new Date().getHours();
+  document.getElementById('home-greeting').textContent=h<12?'おはようございます':'お疲れさまです';
+}
+
+function showLP(){
+  document.getElementById('lp-view').style.display='';
+  document.getElementById('home-view').style.display='none';
+}
+
 // Check for shared Choreia token
 var token=localStorage.getItem('choreia_token');
 if(token){
-  // Verify token is still valid
   fetch('https://www.googleapis.com/drive/v3/about?fields=user',{headers:{'Authorization':'Bearer '+token}})
-  .then(function(r){
-    if(!r.ok)throw new Error('expired');
-    return r.json();
-  })
-  .then(function(data){
-    var name=data.user.displayName||data.user.emailAddress||'';
-    document.getElementById('lp-view').style.display='none';
-    document.getElementById('home-view').style.display='';
-    document.getElementById('home-user').textContent=name;
-    // Time-based greeting
-    var h=new Date().getHours();
-    var g=h<12?'おはようございます':h<18?'お疲れさまです':'お疲れさまです';
-    document.getElementById('home-greeting').textContent=g;
-  })
-  .catch(function(){
-    // Token expired, show LP
-    document.getElementById('lp-view').style.display='';
-  });
+  .then(function(r){if(!r.ok)throw new Error('expired');return r.json();})
+  .then(function(data){showHome(data.user.displayName||data.user.emailAddress||'');})
+  .catch(function(){showLP();});
 }else{
-  document.getElementById('lp-view').style.display='';
+  showLP();
+}
+
+function initGIS(){
+  tokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:CLIENT_ID,scope:SCOPES,prompt:'',
+    callback:function(resp){
+      if(resp.error)return;
+      localStorage.setItem('choreia_token',resp.access_token);
+      fetch('https://www.googleapis.com/drive/v3/about?fields=user',{headers:{'Authorization':'Bearer '+resp.access_token}})
+      .then(function(r){return r.json();})
+      .then(function(data){showHome(data.user.displayName||data.user.emailAddress||'');});
+    }
+  });
+}
+// Wait for GIS to load
+var gisCheck=setInterval(function(){
+  if(window.google&&google.accounts&&google.accounts.oauth2){clearInterval(gisCheck);initGIS();}
+},200);
+
+function handleSignIn(){
+  if(!tokenClient){return;}
+  tokenClient.requestAccessToken({prompt:'consent'});
 }
 
 function handleSignOut(){
+  var t=localStorage.getItem('choreia_token');
+  if(t)try{google.accounts.oauth2.revoke(t);}catch(e){}
   localStorage.removeItem('choreia_token');
-  document.getElementById('home-view').style.display='none';
-  document.getElementById('lp-view').style.display='';
+  showLP();
 }
 </script>
 </body>
