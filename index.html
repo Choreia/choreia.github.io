@@ -246,7 +246,19 @@ if(token){
   fetch('https://www.googleapis.com/drive/v3/about?fields=user',{headers:{'Authorization':'Bearer '+token}})
   .then(function(r){if(!r.ok)throw new Error('expired');return r.json();})
   .then(function(data){document.getElementById('home-user').textContent=data.user.displayName||data.user.emailAddress||'';})
-  .catch(function(){showLP();});
+  .catch(function(){
+    // Token expired — try silent refresh once GIS is loaded
+    localStorage.removeItem('choreia_token');
+    var retryCheck=setInterval(function(){
+      if(tokenClient){
+        clearInterval(retryCheck);
+        try{tokenClient.requestAccessToken({prompt:''});}
+        catch(e2){showLP();}
+      }
+    },300);
+    // Timeout: if GIS doesn't load in 5s, show LP
+    setTimeout(function(){clearInterval(retryCheck);if(!localStorage.getItem('choreia_token'))showLP();},5000);
+  });
 }else{
   showLP();
 }
