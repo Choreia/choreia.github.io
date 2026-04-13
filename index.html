@@ -178,14 +178,14 @@ var tokenClient=null;
 
 function showHome(name){
   document.getElementById('lp-view').style.display='none';
-  document.getElementById('home-view').style.display='';
-  document.getElementById('home-user').textContent=name;
+  document.getElementById('home-view').style.display='block';
+  document.getElementById('home-user').textContent=name||'';
   var h=new Date().getHours();
   document.getElementById('home-greeting').textContent=h<12?'おはようございます':'お疲れさまです';
 }
 
 function showLP(){
-  document.getElementById('lp-view').style.display='';
+  document.getElementById('lp-view').style.display='block';
   document.getElementById('home-view').style.display='none';
 }
 
@@ -204,11 +204,12 @@ function initGIS(){
   tokenClient=google.accounts.oauth2.initTokenClient({
     client_id:CLIENT_ID,scope:SCOPES,prompt:'',
     callback:function(resp){
-      if(resp.error)return;
+      if(resp.error){showLP();return;}
       localStorage.setItem('choreia_token',resp.access_token);
       fetch('https://www.googleapis.com/drive/v3/about?fields=user',{headers:{'Authorization':'Bearer '+resp.access_token}})
-      .then(function(r){return r.json();})
-      .then(function(data){showHome(data.user.displayName||data.user.emailAddress||'');});
+      .then(function(r){if(!r.ok)throw new Error();return r.json();})
+      .then(function(data){showHome(data.user.displayName||data.user.emailAddress||'');})
+      .catch(function(){showHome('');});
     }
   });
 }
