@@ -44,13 +44,13 @@ footer a:hover{text-decoration:underline}
 .home-header{padding:48px 20px 20px;text-align:center;position:relative;z-index:1}
 .home-header .greeting{font-size:1.1em;color:rgba(255,255,255,.6);font-weight:500}
 .home-header .user-name{font-size:1.6em;font-weight:800;color:#fff}
-.home-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 12px;padding:20px;max-width:420px;margin:0 auto;position:relative;z-index:1}
-@media(min-width:500px){.home-grid{max-width:480px;gap:20px 16px}}
+.home-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;padding:20px 40px;max-width:360px;margin:0 auto;position:relative;z-index:1}
+@media(min-width:500px){.home-grid{max-width:400px;gap:24px;padding:20px 50px}}
 .home-icon{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;-webkit-tap-highlight-color:transparent}
 .home-icon:active .icon-box{transform:scale(0.9)}
-.icon-box{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8em;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:transform .1s}
-@media(min-width:500px){.icon-box{width:68px;height:68px;border-radius:18px;font-size:2em}}
-.home-icon .label{font-size:.7em;font-weight:600;color:rgba(255,255,255,.85);text-align:center;line-height:1.2}
+.icon-box{width:72px;height:72px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2.2em;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:transform .15s}
+@media(min-width:500px){.icon-box{width:80px;height:80px;border-radius:20px;font-size:2.4em}}
+.home-icon .label{font-size:.8em;font-weight:600;color:rgba(255,255,255,.85);text-align:center;line-height:1.2}
 .home-signout{text-align:center;padding:30px;margin-top:auto;position:relative;z-index:1}
 .home-signout button{background:none;border:none;color:rgba(255,255,255,.4);font-size:.8em;cursor:pointer;font-family:inherit;padding:8px 16px}
 .home-dock{position:fixed;bottom:0;left:0;right:0;padding:12px 20px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px);display:flex;justify-content:center;gap:20px;background:rgba(20,20,40,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.08)}
@@ -141,30 +141,6 @@ footer a:hover{text-decoration:underline}
     <a class="home-icon" href="https://choreia.github.io/Photos/">
       <div class="icon-box" style="background:linear-gradient(135deg,#d97706,#b45309)">&#128247;</div>
       <div class="label">Photos</div>
-    </a>
-    <a class="home-icon" href="https://choreia.github.io/Expense/">
-      <div class="icon-box" style="background:linear-gradient(135deg,#2563eb,#1d4ed8)">&#129534;</div>
-      <div class="label">Expense</div>
-    </a>
-    <a class="home-icon" href="https://choreia.github.io/Books/">
-      <div class="icon-box" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">&#128214;</div>
-      <div class="label">Books</div>
-    </a>
-    <a class="home-icon" href="https://choreia.github.io/Guide/">
-      <div class="icon-box" style="background:linear-gradient(135deg,#059669,#047857)">&#128218;</div>
-      <div class="label">Guide</div>
-    </a>
-    <a class="home-icon" href="https://choreia.github.io/Forms/">
-      <div class="icon-box" style="background:linear-gradient(135deg,#dc2626,#b91c1c)">&#128203;</div>
-      <div class="label">Forms</div>
-    </a>
-    <a class="home-icon" href="https://choreia.github.io/Admin/">
-      <div class="icon-box" style="background:linear-gradient(135deg,#475569,#334155)">&#9881;</div>
-      <div class="label">Admin</div>
-    </a>
-    <a class="home-icon" href="https://drive.google.com" target="_blank">
-      <div class="icon-box" style="background:linear-gradient(135deg,#f59e0b,#d97706)">&#128193;</div>
-      <div class="label">Drive</div>
     </a>
   </div>
   <div class="home-signout"><button onclick="handleSignOut()">ログアウト</button></div>
