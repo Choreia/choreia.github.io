@@ -2,13 +2,18 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="google-site-verification" content="_-DnGfQMk_Kek_IU01iWIMaLk8hNI7jOjtEf-o-v6ow" />
 <title>Choreia — 無料ビジネスツール</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Choreia">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;color:#2c2418;line-height:1.7;background:#faf8f5}
+
+/* ==================== LP (未ログイン) ==================== */
 header{background:linear-gradient(135deg,#a0522d,#7a3d22);padding:40px 16px;text-align:center;color:#fff}
 .logo{display:flex;align-items:center;justify-content:center;gap:12px}
 .logo svg{width:48px;height:48px}
@@ -30,12 +35,35 @@ header p{color:rgba(255,255,255,0.85);margin-top:6px;font-size:1.05rem}
 footer{text-align:center;padding:32px 16px;color:#8a7e6e;font-size:0.85rem;border-top:1px solid #d4cdc2;margin-top:16px}
 footer a{color:#a0522d;text-decoration:none}
 footer a:hover{text-decoration:underline}
+
+/* ==================== Home (ログイン済み) ==================== */
+.home-view{display:none;min-height:100vh;background:linear-gradient(160deg,#1a1a2e 0%,#16213e 40%,#0f3460 100%);padding:0;padding-top:env(safe-area-inset-top,0);position:relative;overflow:hidden}
+.home-view::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(168,130,255,.15) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(255,180,130,.1) 0%,transparent 50%);pointer-events:none}
+.home-view::after{content:'';position:absolute;top:-40%;right:-20%;width:80%;height:80%;border-radius:50%;border:1px solid rgba(255,255,255,.04);animation:orbit 30s linear infinite;pointer-events:none}
+@keyframes orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.home-header{padding:48px 20px 20px;text-align:center;position:relative;z-index:1}
+.home-header .greeting{font-size:1.1em;color:rgba(255,255,255,.6);font-weight:500}
+.home-header .user-name{font-size:1.6em;font-weight:800;color:#fff}
+.home-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 12px;padding:20px;max-width:420px;margin:0 auto;position:relative;z-index:1}
+@media(min-width:500px){.home-grid{max-width:480px;gap:20px 16px}}
+.home-icon{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.home-icon:active .icon-box{transform:scale(0.9)}
+.icon-box{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8em;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:transform .1s}
+@media(min-width:500px){.icon-box{width:68px;height:68px;border-radius:18px;font-size:2em}}
+.home-icon .label{font-size:.7em;font-weight:600;color:rgba(255,255,255,.85);text-align:center;line-height:1.2}
+.home-signout{text-align:center;padding:30px;margin-top:auto;position:relative;z-index:1}
+.home-signout button{background:none;border:none;color:rgba(255,255,255,.4);font-size:.8em;cursor:pointer;font-family:inherit;padding:8px 16px}
+.home-dock{position:fixed;bottom:0;left:0;right:0;padding:12px 20px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px);display:flex;justify-content:center;gap:20px;background:rgba(20,20,40,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.08)}
+.dock-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5em;box-shadow:0 2px 8px rgba(0,0,0,.2);text-decoration:none;transition:transform .1s}
+.dock-icon:active{transform:scale(0.9)}
 </style>
 </head>
 <body>
+
+<!-- ==================== LP View ==================== -->
+<div id="lp-view">
 <header>
   <div class="logo">
-    <!-- Choreia logo: stylized "C" with flowing dance motif -->
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="24" cy="24" r="22" fill="rgba(255,255,255,0.15)"/>
       <path d="M32 14c-6-4-14-2-17 5s-1 15 6 18" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/>
@@ -54,82 +82,38 @@ footer a:hover{text-decoration:underline}
   <div class="apps">
     <div class="app">
       <div class="app-header">
-        <!-- Expense icon: receipt -->
-        <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="4" y="2" width="20" height="24" rx="2" fill="#f5ece5" stroke="#a0522d" stroke-width="1.5"/>
-          <path d="M9 8h10M9 12h10M9 16h6" stroke="#a0522d" stroke-width="1.5" stroke-linecap="round"/>
-          <path d="M4 24l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2" stroke="#a0522d" stroke-width="1" fill="none"/>
-        </svg>
+        <svg viewBox="0 0 28 28" fill="none"><rect x="4" y="2" width="20" height="24" rx="2" fill="#f5ece5" stroke="#a0522d" stroke-width="1.5"/><path d="M9 8h10M9 12h10M9 16h6" stroke="#a0522d" stroke-width="1.5" stroke-linecap="round"/><path d="M4 24l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2" stroke="#a0522d" stroke-width="1" fill="none"/></svg>
         <h2>Expense</h2>
       </div>
-      <p>レシートを撮るだけ。AIが自動で経費処理。Gemini Visionがレシートを読み取り、Google Sheetsに保存します。</p>
-      <div style="margin-bottom:8px">
-        <span class="tag">AI読み取り</span>
-        <span class="tag">Google Sheets</span>
-        <span class="tag">電子帳簿保存法対応</span>
-      </div>
+      <p>レシートを撮るだけ。AIが自動で経費処理。</p>
+      <div style="margin-bottom:8px"><span class="tag">AI読み取り</span><span class="tag">Google Sheets</span><span class="tag">電子帳簿保存法対応</span></div>
       <a href="https://choreia.github.io/Expense/">使ってみる →</a>
     </div>
     <div class="app">
       <div class="app-header">
-        <!-- Books icon: open book -->
-        <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M14 6C12 4 8 3 4 4v18c4-1 8 0 10 2" fill="#f5ece5" stroke="#a0522d" stroke-width="1.5"/>
-          <path d="M14 6c2-2 6-3 10-2v18c-4-1-8 0-10 2" fill="#f5ece5" stroke="#a0522d" stroke-width="1.5"/>
-          <path d="M14 6v18" stroke="#a0522d" stroke-width="1"/>
-          <path d="M7 9h4M7 12h4M17 9h4M17 12h4" stroke="#a0522d" stroke-width="1" stroke-linecap="round"/>
-        </svg>
+        <svg viewBox="0 0 28 28" fill="none"><path d="M14 6C12 4 8 3 4 4v18c4-1 8 0 10 2" fill="#f5ece5" stroke="#a0522d" stroke-width="1.5"/><path d="M14 6c2-2 6-3 10-2v18c-4-1-8 0-10 2" fill="#f5ece5" stroke="#a0522d" stroke-width="1.5"/><path d="M14 6v18" stroke="#a0522d" stroke-width="1"/><path d="M7 9h4M7 12h4M17 9h4M17 12h4" stroke="#a0522d" stroke-width="1" stroke-linecap="round"/></svg>
         <h2>Books</h2>
       </div>
-      <p>個人事業主・一人法人向けの無料会計ソフト。税金計算・仕訳帳・請求書をブラウザだけで完結。</p>
-      <div style="margin-bottom:8px">
-        <span class="tag">確定申告</span>
-        <span class="tag">仕訳帳</span>
-        <span class="tag">請求書</span>
-      </div>
+      <p>個人事業主・一人法人向けの無料会計ソフト。</p>
+      <div style="margin-bottom:8px"><span class="tag">確定申告</span><span class="tag">仕訳帳</span><span class="tag">請求書</span></div>
       <a href="https://choreia.github.io/Books/">使ってみる →</a>
     </div>
     <div class="app">
       <div class="app-header">
-        <!-- Guide icon: chat bubble with book -->
-        <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="4" width="22" height="18" rx="4" fill="#f5ece5" stroke="#a0522d" stroke-width="1.5"/>
-          <path d="M14 10c-1.5-1.5-4-2-6-1.5v9c2-.5 4.5 0 6 1.5" fill="none" stroke="#a0522d" stroke-width="1.3" stroke-linecap="round"/>
-          <path d="M14 10c1.5-1.5 4-2 6-1.5v9c-2-.5-4.5 0-6 1.5" fill="none" stroke="#a0522d" stroke-width="1.3" stroke-linecap="round"/>
-          <path d="M14 10v10" stroke="#a0522d" stroke-width="1"/>
-          <circle cx="21" cy="6" r="4" fill="#a0522d"/>
-          <path d="M19.5 6h3M21 4.5v3" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
+        <svg viewBox="0 0 28 28" fill="none"><rect x="3" y="4" width="22" height="18" rx="4" fill="#f5ece5" stroke="#a0522d" stroke-width="1.5"/><circle cx="21" cy="6" r="4" fill="#a0522d"/><path d="M19.5 6h3M21 4.5v3" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg>
         <h2>Guide</h2>
       </div>
-      <p>社内ルールについて質問するだけ。AIがスプレッドシートのルール集から回答。不確定な回答は蓄積して育てるFAQ。</p>
-      <div style="margin-bottom:8px">
-        <span class="tag">AI回答</span>
-        <span class="tag">Google Sheets</span>
-        <span class="tag">育てるFAQ</span>
-      </div>
+      <p>社内ルールについて質問するだけ。AIが回答。</p>
+      <div style="margin-bottom:8px"><span class="tag">AI回答</span><span class="tag">Google Sheets</span><span class="tag">育てるFAQ</span></div>
       <a href="https://choreia.github.io/Guide/">使ってみる →</a>
     </div>
     <div class="app">
       <div class="app-header">
-        <!-- Forms icon: clipboard with checkboxes -->
-        <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="5" y="4" width="18" height="21" rx="2" fill="#f5ece5" stroke="#a0522d" stroke-width="1.5"/>
-          <rect x="10" y="1" width="8" height="5" rx="1.5" fill="#fff" stroke="#a0522d" stroke-width="1.5"/>
-          <rect x="8" y="10" width="4" height="4" rx="1" stroke="#a0522d" stroke-width="1.2"/>
-          <path d="M9 12.5l1.5 1.5 2.5-3" stroke="#a0522d" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M15 12h5" stroke="#a0522d" stroke-width="1.2" stroke-linecap="round"/>
-          <rect x="8" y="17" width="4" height="4" rx="1" stroke="#a0522d" stroke-width="1.2"/>
-          <path d="M15 19h5" stroke="#a0522d" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
+        <svg viewBox="0 0 28 28" fill="none"><rect x="5" y="4" width="18" height="21" rx="2" fill="#f5ece5" stroke="#a0522d" stroke-width="1.5"/><rect x="10" y="1" width="8" height="5" rx="1.5" fill="#fff" stroke="#a0522d" stroke-width="1.5"/></svg>
         <h2>Forms</h2>
       </div>
-      <p>AIで美しいフォームを作成。Google Sheetsをバックエンドに、GitHub Pagesでホスティング。</p>
-      <div style="margin-bottom:8px">
-        <span class="tag">AI生成</span>
-        <span class="tag">Google Sheets</span>
-        <span class="tag">ノーコード</span>
-      </div>
+      <p>AIで美しいフォームを作成。</p>
+      <div style="margin-bottom:8px"><span class="tag">AI生成</span><span class="tag">Google Sheets</span><span class="tag">ノーコード</span></div>
       <a href="https://choreia.github.io/Forms/">使ってみる →</a>
     </div>
   </div>
@@ -137,5 +121,84 @@ footer a:hover{text-decoration:underline}
 <footer>
   <p>&copy; 2026 Choreia — <a href="privacy.html">プライバシーポリシー</a> ・ <a href="terms.html">利用規約</a> ・ <a href="https://github.com/Choreia">GitHub</a></p>
 </footer>
+</div>
+
+<!-- ==================== Home View ==================== -->
+<div class="home-view" id="home-view">
+  <div class="home-header">
+    <div class="greeting" id="home-greeting">おはようございます</div>
+    <div class="user-name" id="home-user"></div>
+  </div>
+  <div class="home-grid">
+    <a class="home-icon" href="https://choreia.github.io/Flow/">
+      <div class="icon-box" style="background:linear-gradient(135deg,#1a6b4a,#0d4a30)">&#128188;</div>
+      <div class="label">Flow</div>
+    </a>
+    <a class="home-icon" href="https://choreia.github.io/Photos/">
+      <div class="icon-box" style="background:linear-gradient(135deg,#d97706,#b45309)">&#128247;</div>
+      <div class="label">Photos</div>
+    </a>
+    <a class="home-icon" href="https://choreia.github.io/Expense/">
+      <div class="icon-box" style="background:linear-gradient(135deg,#2563eb,#1d4ed8)">&#129534;</div>
+      <div class="label">Expense</div>
+    </a>
+    <a class="home-icon" href="https://choreia.github.io/Books/">
+      <div class="icon-box" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">&#128214;</div>
+      <div class="label">Books</div>
+    </a>
+    <a class="home-icon" href="https://choreia.github.io/Guide/">
+      <div class="icon-box" style="background:linear-gradient(135deg,#059669,#047857)">&#128218;</div>
+      <div class="label">Guide</div>
+    </a>
+    <a class="home-icon" href="https://choreia.github.io/Forms/">
+      <div class="icon-box" style="background:linear-gradient(135deg,#dc2626,#b91c1c)">&#128203;</div>
+      <div class="label">Forms</div>
+    </a>
+    <a class="home-icon" href="https://choreia.github.io/Admin/">
+      <div class="icon-box" style="background:linear-gradient(135deg,#475569,#334155)">&#9881;</div>
+      <div class="label">Admin</div>
+    </a>
+    <a class="home-icon" href="https://drive.google.com" target="_blank">
+      <div class="icon-box" style="background:linear-gradient(135deg,#f59e0b,#d97706)">&#128193;</div>
+      <div class="label">Drive</div>
+    </a>
+  </div>
+  <div class="home-signout"><button onclick="handleSignOut()">ログアウト</button></div>
+</div>
+
+<script>
+// Check for shared Choreia token
+var token=localStorage.getItem('choreia_token');
+if(token){
+  // Verify token is still valid
+  fetch('https://www.googleapis.com/drive/v3/about?fields=user',{headers:{'Authorization':'Bearer '+token}})
+  .then(function(r){
+    if(!r.ok)throw new Error('expired');
+    return r.json();
+  })
+  .then(function(data){
+    var name=data.user.displayName||data.user.emailAddress||'';
+    document.getElementById('lp-view').style.display='none';
+    document.getElementById('home-view').style.display='';
+    document.getElementById('home-user').textContent=name;
+    // Time-based greeting
+    var h=new Date().getHours();
+    var g=h<12?'おはようございます':h<18?'お疲れさまです':'お疲れさまです';
+    document.getElementById('home-greeting').textContent=g;
+  })
+  .catch(function(){
+    // Token expired, show LP
+    document.getElementById('lp-view').style.display='';
+  });
+}else{
+  document.getElementById('lp-view').style.display='';
+}
+
+function handleSignOut(){
+  localStorage.removeItem('choreia_token');
+  document.getElementById('home-view').style.display='none';
+  document.getElementById('lp-view').style.display='';
+}
+</script>
 </body>
 </html>
