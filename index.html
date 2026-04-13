@@ -160,6 +160,12 @@ footer a:hover{text-decoration:underline}
       <div class="label">Photos</div>
     </a>
   </div>
+  <div id="home-news" style="max-width:360px;margin:20px auto 0;padding:0 20px;position:relative;z-index:1;display:none">
+    <div style="background:rgba(255,255,255,.7);border-radius:14px;padding:16px;backdrop-filter:blur(8px);box-shadow:0 1px 6px rgba(0,0,0,.06)">
+      <div style="font-size:.75em;font-weight:600;color:#a0522d;margin-bottom:6px">TODAY</div>
+      <div id="home-news-text" style="font-size:.85em;color:#3a2e22;line-height:1.7"></div>
+    </div>
+  </div>
   <div class="home-signout"><button onclick="handleSignOut()">ログアウト</button></div>
 </div>
 
@@ -174,7 +180,47 @@ function showHome(name){
   document.getElementById('home-view').style.display='block';
   document.getElementById('home-user').textContent=name||'';
   var h=new Date().getHours();
-  document.getElementById('home-greeting').textContent=h<12?'おはようございます':'お疲れさまです';
+  var g;
+  if(h>=5&&h<10)g='おはようございます';
+  else if(h>=10&&h<18)g='お疲れさまです';
+  else if(h>=18&&h<23)g='今日もお疲れさまでした';
+  else g='夜遅くまでお疲れさまです';
+  document.getElementById('home-greeting').textContent=g;
+  loadDailyNews();
+}
+
+function loadDailyNews(){
+  var key=localStorage.getItem('choreia_gemini_key');
+  if(!key)return;
+  // Cache for the day
+  var today=new Date().toISOString().slice(0,10);
+  var cached=localStorage.getItem('choreia_daily_news');
+  if(cached){
+    try{var c=JSON.parse(cached);if(c.date===today&&c.text){showNews(c.text);return;}}catch(e){}
+  }
+  var now=new Date();
+  var month=now.getMonth()+1;var day=now.getDate();
+  var weekday=['日','月','火','水','木','金','土'][now.getDay()];
+  var prompt='今日は'+now.getFullYear()+'年'+month+'月'+day+'日（'+weekday+'）です。ビジネスパーソンの朝に役立つ「今日のひとこと」を1〜2文で書いてください。今日の歴史的な出来事、季節の話題、ビジネスの豆知識など、会話のネタになるものを。敬語不要、簡潔に。';
+  fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+key,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.9,maxOutputTokens:200}})
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var text='';
+    try{text=data.candidates[0].content.parts[0].text.trim();}catch(e){}
+    if(text){
+      localStorage.setItem('choreia_daily_news',JSON.stringify({date:today,text:text}));
+      showNews(text);
+    }
+  })
+  .catch(function(){});
+}
+
+function showNews(text){
+  document.getElementById('home-news-text').textContent=text;
+  document.getElementById('home-news').style.display='block';
 }
 
 function showLP(){
