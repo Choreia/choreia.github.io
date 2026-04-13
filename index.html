@@ -6,9 +6,13 @@
 <meta name="google-site-verification" content="_-DnGfQMk_Kek_IU01iWIMaLk8hNI7jOjtEf-o-v6ow" />
 <title>Choreia — 無料ビジネスツール</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="icon-192.svg">
+<link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Choreia">
+<meta name="theme-color" content="#1a1a2e">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;color:#2c2418;line-height:1.7;background:#faf8f5}
@@ -53,6 +57,14 @@ footer a:hover{text-decoration:underline}
 .home-icon .label{font-size:.8em;font-weight:600;color:rgba(255,255,255,.85);text-align:center;line-height:1.2}
 .home-signout{text-align:center;padding:30px;margin-top:auto;position:relative;z-index:1}
 .home-signout button{background:none;border:none;color:rgba(255,255,255,.4);font-size:.8em;cursor:pointer;font-family:inherit;padding:8px 16px}
+
+/* Install banner */
+.install-banner{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.95);color:#1a1a2e;padding:14px 20px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.2);z-index:500;max-width:340px;width:calc(100% - 32px);text-align:center;font-size:.85em;backdrop-filter:blur(10px)}
+.install-banner .install-title{font-weight:700;margin-bottom:4px;font-size:.95em}
+.install-banner .install-desc{color:#5a5044;font-size:.8em;margin-bottom:10px;line-height:1.5}
+.install-banner .install-actions{display:flex;gap:8px;justify-content:center}
+.install-banner .btn-install{padding:8px 20px;border:none;border-radius:10px;font-size:.85em;font-weight:600;cursor:pointer;font-family:inherit;background:#a0522d;color:#fff}
+.install-banner .btn-dismiss{padding:8px 12px;border:none;border-radius:10px;font-size:.85em;cursor:pointer;font-family:inherit;background:#e8e0d8;color:#5a5044}
 .home-dock{position:fixed;bottom:0;left:0;right:0;padding:12px 20px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px);display:flex;justify-content:center;gap:20px;background:rgba(20,20,40,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.08)}
 .dock-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5em;box-shadow:0 2px 8px rgba(0,0,0,.2);text-decoration:none;transition:transform .1s}
 .dock-icon:active{transform:scale(0.9)}
@@ -214,6 +226,60 @@ function handleSignOut(){
   localStorage.removeItem('choreia_token');
   showLP();
 }
+
+// ==================== Install to Home Screen ====================
+var deferredPrompt=null;
+var isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+
+// Android: capture beforeinstallprompt
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  deferredPrompt=e;
+  if(!isStandalone&&!localStorage.getItem('choreia_install_dismissed'))showInstallBanner('android');
+});
+
+// iOS: show custom instructions
+if(/iPhone|iPad|iPod/.test(navigator.userAgent)&&!isStandalone&&!localStorage.getItem('choreia_install_dismissed')){
+  setTimeout(function(){showInstallBanner('ios');},2000);
+}
+
+function showInstallBanner(platform){
+  var banner=document.getElementById('install-banner');
+  var desc=document.getElementById('install-desc');
+  if(platform==='ios'){
+    desc.innerHTML='Safari下部の <strong>共有ボタン</strong>（&#9757;）→<br><strong>「ホーム画面に追加」</strong>をタップ';
+  }else{
+    desc.textContent='ホーム画面に追加してアプリのように使えます';
+  }
+  document.getElementById('btn-install').style.display=platform==='android'?'':'none';
+  banner.style.display='block';
+}
+
+function doInstall(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(){deferredPrompt=null;});
+  }
+  document.getElementById('install-banner').style.display='none';
+}
+
+function dismissInstall(){
+  document.getElementById('install-banner').style.display='none';
+  localStorage.setItem('choreia_install_dismissed','1');
+}
+
+// Register service worker for PWA
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
+
+<!-- Install Banner -->
+<div class="install-banner" id="install-banner">
+  <div class="install-title">Choreia をホーム画面に追加</div>
+  <div class="install-desc" id="install-desc"></div>
+  <div class="install-actions">
+    <button class="btn-install" id="btn-install" onclick="doInstall()">追加する</button>
+    <button class="btn-dismiss" onclick="dismissInstall()">後で</button>
+  </div>
+</div>
 </body>
 </html>
